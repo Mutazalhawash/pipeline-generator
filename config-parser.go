@@ -49,10 +49,6 @@ type configStage struct {
 	NextManualStages deprManStages `json:"next-manual-stages"`
 }
 
-type AndroidLint struct {
-	LintFile string
-}
-
 type configJob struct {
 	Artifacts         []string
 	Cmd               string
@@ -63,7 +59,6 @@ type configJob struct {
 	TestReports       string
 	TriggeredManually bool
 	UpstreamJobs      []string
-	AndroidLint       string
 }
 
 func (cj configJob) taskName() string {
@@ -124,8 +119,6 @@ func (cj *configJob) UnmarshalJSON(jsonString []byte) error {
 						case "artifact":
 							artifacts := strings.Split(jvalue.(string), ",")
 							return fmt.Errorf("\ndeprecated attribute syntax:\n\n\"artifact\": \"%s\"\n\nuse\n\n\"artifacts\": [\"%s\"]\n\ninstead\n", strings.Join(artifacts, ","), strings.Join(artifacts, `","`))
-						case "android-lint":
-							cj.AndroidLint = jvalue.(string)
 						default:
 							return fmt.Errorf("unknown string options passed in: %s", jkey)
 						}

@@ -174,33 +174,6 @@ git reset --hard ${GIT_SHA}{{ end }}
     </hudson.tasks.Shell>
   </builders>
   <publishers>
-    {{ if .AndroidLint }}
-    <org.jenkinsci.plugins.android__lint.LintPublisher plugin="android-lint@2.2">
-      <healthy/>
-      <unHealthy/>
-      <thresholdLimit>low</thresholdLimit>
-      <pluginName>[android-lint]</pluginName>
-      <defaultEncoding/>
-      <canRunOnFailed>false</canRunOnFailed>
-      <usePreviousBuildAsReference>false</usePreviousBuildAsReference>
-      <useStableBuildAsReference>false</useStableBuildAsReference>
-      <useDeltaValues>false</useDeltaValues>
-      <thresholds plugin="analysis-core@1.72">
-      <unstableTotalAll/>
-      <unstableTotalHigh/>
-      <unstableTotalNormal/>
-      <unstableTotalLow/>
-      <failedTotalAll/>
-      <failedTotalHigh>0</failedTotalHigh>
-      <failedTotalNormal>0</failedTotalNormal>
-      <failedTotalLow/>
-      </thresholds>
-      <shouldDetectModules>false</shouldDetectModules>
-      <dontComputeNew>true</dontComputeNew>
-      <doNotResolveRelativePaths>false</doNotResolveRelativePaths>
-      <pattern>{{ .AndroidLint }}</pattern>
-    </org.jenkinsci.plugins.android__lint.LintPublisher>
-    {{ end }}
     {{ if .TestReports }}
     <hudson.tasks.junit.JUnitResultArchiver plugin="junit@1.0">
       <testResults>{{ .TestReports }}</testResults>

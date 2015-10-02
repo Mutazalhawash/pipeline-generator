@@ -62,7 +62,6 @@ type jenkinsSingleJob struct {
 	TestReports     string
 	UpstreamJobs    string
 	WorkingDir      string
-	AndroidLint     string
 }
 
 type jenkinsMultiJob struct {
@@ -192,7 +191,6 @@ func (jp JenkinsPipeline) CreatePipeline(pipelineName string) (string, error) {
 // NewJenkinsPipeline returns a JenkinsPipeline by parsing the given configuration
 func NewJenkinsPipeline(configuration io.Reader) (JenkinsPipeline, error) {
 	var pipeline JenkinsPipeline
-
 	err := json.NewDecoder(configuration).Decode(&pipeline)
 	if err != nil {
 		return JenkinsPipeline{}, fmt.Errorf("unable to parse pipeline configuration: %s\n", err.Error())
@@ -393,7 +391,6 @@ func newJenkinsJob(conf ConfigFile, job configJob, setup string, stage configSta
 		GitURL:       gitURL.(string),
 		Command:      command,
 		TestReports:  job.TestReports,
-		AndroidLint:  job.AndroidLint,
 		UpstreamJobs: strings.Join(job.UpstreamJobs, ","),
 	}
 
