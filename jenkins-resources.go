@@ -50,6 +50,7 @@ type jenkinsJob struct {
 
 type jenkinsSingleJob struct {
 	jenkinsJob
+	AndroidLint AndroidLint
 
 	Artifact        string
 	ArtifactDep     []artifactDep
@@ -386,11 +387,15 @@ func newJenkinsJob(conf ConfigFile, job configJob, setup string, stage configSta
 			CleanWorkspace:   !job.NoClean,
 			NextManualJobs:   nextManualJobsTemplate,
 		},
-		Notify:       notify,
-		Artifact:     strings.Join(job.Artifacts, ","),
-		GitURL:       gitURL.(string),
-		Command:      command,
-		TestReports:  job.TestReports,
+
+		AndroidLint: job.AndroidLint,
+
+		Notify:      notify,
+		Artifact:    strings.Join(job.Artifacts, ","),
+		GitURL:      gitURL.(string),
+		Command:     command,
+		TestReports: job.TestReports,
+
 		UpstreamJobs: strings.Join(job.UpstreamJobs, ","),
 	}
 

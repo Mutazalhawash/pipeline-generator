@@ -51,6 +51,13 @@
             "jobs": [
                 { "job14": {"cmd": "echo 'job14' && ls", "manual": true} },
                 { "job15": "echo 'job15'" }
+            ],
+            "next-stages": [ "stage4", "stage6" ]
+        },
+        {
+            "name": "stage6",
+            "jobs": [
+                { "job16": {"cmd": "echo 'job14' && ls", "android-lint": { "lintFile": "path", "failedTotalHigh": 10, "failedTotalNormal": 110 }} }
             ]
         }
     ],
