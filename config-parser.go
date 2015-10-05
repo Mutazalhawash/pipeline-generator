@@ -49,11 +49,9 @@ type configStage struct {
 	NextManualStages deprManStages `json:"next-manual-stages"`
 }
 
-type AndroidLint struct {
-	LintFile string
-}
-
 type configJob struct {
+	AndroidLint AndroidLint
+
 	Artifacts         []string
 	Cmd               string
 	DownstreamJobs    []string
@@ -63,7 +61,6 @@ type configJob struct {
 	TestReports       string
 	TriggeredManually bool
 	UpstreamJobs      []string
-	AndroidLint       string
 }
 
 func (cj configJob) taskName() string {
@@ -124,8 +121,6 @@ func (cj *configJob) UnmarshalJSON(jsonString []byte) error {
 						case "artifact":
 							artifacts := strings.Split(jvalue.(string), ",")
 							return fmt.Errorf("\ndeprecated attribute syntax:\n\n\"artifact\": \"%s\"\n\nuse\n\n\"artifacts\": [\"%s\"]\n\ninstead\n", strings.Join(artifacts, ","), strings.Join(artifacts, `","`))
-						case "android-lint":
-							cj.AndroidLint = jvalue.(string)
 						default:
 							return fmt.Errorf("unknown string options passed in: %s", jkey)
 						}
@@ -154,6 +149,13 @@ func (cj *configJob) UnmarshalJSON(jsonString []byte) error {
 							}
 						default:
 							return fmt.Errorf("unknown array option passed in: %s", jkey)
+						}
+					case map[string]interface{}:
+						switch jkey {
+						case "android-lint":
+							cj.AndroidLint.parseJSON(jvalue.(map[string]interface{}))
+						default:
+							return fmt.Errorf("Plugin not supported, got %#v for key %s", jvalueType, jkey)
 						}
 					default:
 						return fmt.Errorf("job hash must only contain string or bool values, got %#v for key %s", jvalueType, jkey)

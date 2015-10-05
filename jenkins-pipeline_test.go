@@ -58,7 +58,7 @@ func TestBasicConfigParsing(t *testing.T) {
 
 func TestStagesParsing(t *testing.T) {
 	expectations{
-		{"number of stages", 6, len(testConfigFile().Stages)},
+		{"number of stages", 7, len(testConfigFile().Stages)},
 
 		{"stage0 name", "stage0", testConfigFile().Stages[0].Name},
 		{"stage0 num of jobs", 2, len(testConfigFile().Stages[0].Jobs)},
@@ -146,7 +146,7 @@ func TestPipelineCreation(t *testing.T) {
 	defaultName, _ := jp.DefaultName()
 
 	job1EndPoint, job1EndPointError := jp.resources[1].projectName("test-project")
-	pipelineViewEndPoint, pipelineViewEndPointError := jp.resources[16].projectName("test-project")
+	pipelineViewEndPoint, pipelineViewEndPointError := jp.resources[17].projectName("test-project")
 	expectations{
 		{"no parsing error happened", nil, err},
 		{"endpoint rendering for job1 worked", nil, job1EndPointError},
@@ -154,7 +154,7 @@ func TestPipelineCreation(t *testing.T) {
 		{"jenkins server", JenkinsServer("http://jenkins:8080"), jp.JenkinsServer},
 		{"default name", "my-funny-pipeline", defaultName},
 
-		{"parsed all resources", 17, len(jp.resources)},
+		{"parsed all resources", 18, len(jp.resources)},
 		{"job0 name", "|>| job0", jp.resources[0].(jenkinsSingleJob).TaskName},
 		{"job0 manual", true, jp.resources[0].(jenkinsSingleJob).TriggeredManually},
 		{"job0 notify", true, jp.resources[0].(jenkinsSingleJob).Notify},
@@ -197,9 +197,13 @@ func TestPipelineCreation(t *testing.T) {
 
 		{"job12 stage name", "stage4", jp.resources[13].(jenkinsSingleJob).StageName},
 		{"job12 does not have next job as it is in manual stage", "", jp.resources[13].(jenkinsSingleJob).NextJobs},
+		{"job12 does not have AndroidLint", "", jp.resources[13].(jenkinsSingleJob).AndroidLint.LintFile},
 
 		{"job14 escapes ampersands in cmd field correctly", "\n# change to working dir:\ncd subdir\n\n\n# job setup\nexport VAR=foobar\n\n# job\necho 'job14' &amp;&amp; ls", jp.resources[14].(jenkinsSingleJob).Command},
-
+		{"job16 has AndroidLint plugin path set", "path", jp.resources[16].(jenkinsSingleJob).AndroidLint.LintFile},
+		{"job16 has AndroidLint plugin HasAdvancedSettings set", true, jp.resources[16].(jenkinsSingleJob).AndroidLint.HasAdvancedSettings},
+		{"job16 has AndroidLint plugin FailedTotalHigh set", 110, int(jp.resources[16].(jenkinsSingleJob).AndroidLint.FailedTotalNormal)},
+		{"job16 has AndroidLint plugin FailedTotalNormal set", 110, int(jp.resources[16].(jenkinsSingleJob).AndroidLint.FailedTotalNormal)},
 		{"pipeline projectName", "test-project", pipelineViewEndPoint},
 	}.Run(t)
 }
