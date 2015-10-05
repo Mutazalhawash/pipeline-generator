@@ -182,7 +182,6 @@ func (js JenkinsServer) Check() error {
 	}
 
 	return plugins.installed([]string{
-		"android-lint",
 		"ansicolor",
 		"build-pipeline-plugin",
 		"copyartifact",

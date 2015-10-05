@@ -105,7 +105,7 @@ func templatesJenkinsNormalJobXml() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "templates/jenkins/normal-job.xml", size: 9810, mode: os.FileMode(420), modTime: time.Unix(1444050804, 0)}
+	info := bindataFileInfo{name: "templates/jenkins/normal-job.xml", size: 9810, mode: os.FileMode(420), modTime: time.Unix(1444055946, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }

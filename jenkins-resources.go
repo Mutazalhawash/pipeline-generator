@@ -192,7 +192,6 @@ func (jp JenkinsPipeline) CreatePipeline(pipelineName string) (string, error) {
 // NewJenkinsPipeline returns a JenkinsPipeline by parsing the given configuration
 func NewJenkinsPipeline(configuration io.Reader) (JenkinsPipeline, error) {
 	var pipeline JenkinsPipeline
-
 	err := json.NewDecoder(configuration).Decode(&pipeline)
 	if err != nil {
 		return JenkinsPipeline{}, fmt.Errorf("unable to parse pipeline configuration: %s\n", err.Error())
