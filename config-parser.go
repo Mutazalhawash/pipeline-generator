@@ -51,6 +51,7 @@ type configStage struct {
 
 type configJob struct {
 	AndroidLint AndroidLint
+	Findbugs    Findbugs
 
 	Artifacts         []string
 	Cmd               string
@@ -154,6 +155,8 @@ func (cj *configJob) UnmarshalJSON(jsonString []byte) error {
 						switch jkey {
 						case "android-lint":
 							cj.AndroidLint.parseJSON(jvalue.(map[string]interface{}))
+						case "findbugs":
+							cj.Findbugs.parseJSON(jvalue.(map[string]interface{}))
 						default:
 							return fmt.Errorf("Plugin not supported, got %#v for key %s", jvalueType, jkey)
 						}
