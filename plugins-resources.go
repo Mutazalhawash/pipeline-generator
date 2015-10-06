@@ -3,7 +3,7 @@ package pipeline
 import "fmt"
 
 type AndroidLint struct {
-	LintFile            string
+	Pattern             string
 	HasAdvancedSettings bool
 	FailedTotalNormal   float64
 	FailedTotalHigh     float64
@@ -12,8 +12,8 @@ type AndroidLint struct {
 func (androidLint *AndroidLint) parseJSON(jsonString map[string]interface{}) error {
 	for key, value := range jsonString {
 		switch key {
-		case "lintFile":
-			androidLint.LintFile = value.(string)
+		case "pattern":
+			androidLint.Pattern = value.(string)
 		case "failedTotalNormal":
 			androidLint.HasAdvancedSettings = true
 			androidLint.FailedTotalNormal = value.(float64)

@@ -174,7 +174,7 @@ git reset --hard ${GIT_SHA}{{ end }}
     </hudson.tasks.Shell>
   </builders>
   <publishers>
-    {{ if .AndroidLint.LintFile }}
+    {{ if .AndroidLint.Pattern }}
     <org.jenkinsci.plugins.android__lint.LintPublisher plugin="android-lint@2.2">
       <healthy/>
       <unHealthy/>
@@ -198,7 +198,7 @@ git reset --hard ${GIT_SHA}{{ end }}
       <shouldDetectModules>false</shouldDetectModules>
       <dontComputeNew>true</dontComputeNew>
       <doNotResolveRelativePaths>false</doNotResolveRelativePaths>
-      <pattern>{{ .AndroidLint.LintFile }}</pattern>
+      <pattern>{{ .AndroidLint.Pattern }}</pattern>
     </org.jenkinsci.plugins.android__lint.LintPublisher>
     {{ end }}
     {{ if .Findbugs.Pattern}}
