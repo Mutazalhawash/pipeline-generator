@@ -52,6 +52,7 @@ type jenkinsSingleJob struct {
 	jenkinsJob
 	AndroidLint AndroidLint
 	Findbugs    Findbugs
+	Pmd         Pmd
 
 	Artifact        string
 	ArtifactDep     []artifactDep
@@ -391,6 +392,7 @@ func newJenkinsJob(conf ConfigFile, job configJob, setup string, stage configSta
 
 		AndroidLint: job.AndroidLint,
 		Findbugs:    job.Findbugs,
+		Pmd:         job.Pmd,
 
 		Notify:      notify,
 		Artifact:    strings.Join(job.Artifacts, ","),

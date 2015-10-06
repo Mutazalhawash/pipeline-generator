@@ -27,3 +27,37 @@ func (androidLint *AndroidLint) parseJSON(jsonString map[string]interface{}) err
 
 	return nil
 }
+
+type Findbugs struct {
+	Pattern string
+}
+
+func (findbugs *Findbugs) parseJSON(jsonString map[string]interface{}) error {
+	for key, value := range jsonString {
+		switch key {
+		case "pattern":
+			findbugs.Pattern = value.(string)
+		default:
+			return fmt.Errorf("Unknown key for Findbugs plugin: got %#v for key %s", value, key)
+		}
+	}
+
+	return nil
+}
+
+type Pmd struct {
+	Pattern string
+}
+
+func (pmd *Pmd) parseJSON(jsonString map[string]interface{}) error {
+	for key, value := range jsonString {
+		switch key {
+		case "pattern":
+			pmd.Pattern = value.(string)
+		default:
+			return fmt.Errorf("Unknown key for Pmd plugin: got %#v for key %s", value, key)
+		}
+	}
+
+	return nil
+}
