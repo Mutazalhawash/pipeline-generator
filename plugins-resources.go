@@ -61,3 +61,23 @@ func (pmd *Pmd) parseJSON(jsonString map[string]interface{}) error {
 
 	return nil
 }
+
+type TaskPublisher struct {
+	Pattern        string
+	ExcludePattern string
+}
+
+func (taskPublisher *TaskPublisher) parseJSON(jsonString map[string]interface{}) error {
+	for key, value := range jsonString {
+		switch key {
+		case "pattern":
+			taskPublisher.Pattern = value.(string)
+		case "excludePattern":
+			taskPublisher.ExcludePattern = value.(string)
+		default:
+			return fmt.Errorf("Unknown key for TaskPublisher plugin: got %#v for key %s", value, key)
+		}
+	}
+
+	return nil
+}

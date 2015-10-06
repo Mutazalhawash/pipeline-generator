@@ -46,13 +46,15 @@ type jenkinsJob struct {
 	StageName         string
 	NextManualJobs    string
 	NextJobs          string
+	OwnerEmails       string
 }
 
 type jenkinsSingleJob struct {
 	jenkinsJob
-	AndroidLint AndroidLint
-	Findbugs    Findbugs
-	Pmd         Pmd
+	AndroidLint   AndroidLint
+	Findbugs      Findbugs
+	Pmd           Pmd
+	TaskPublisher TaskPublisher
 
 	Artifact        string
 	ArtifactDep     []artifactDep
@@ -338,6 +340,8 @@ func newJenkinsMultiJob(conf ConfigFile, job configJob, setup string, stage conf
 	projectNameTempl := []string{createProjectNameTempl(jobCnt, stage.Name, job)}
 	var subJobs []jenkinsSingleJob
 	var subJobsTemplates []string
+
+	ownerEmails, hasEmail := conf.Settings["owner-emails"]
 	gitBranch, gitBranchPresent := conf.Settings["git-branch"]
 	gitURL, _ := conf.Settings["git-url"]
 
@@ -363,6 +367,10 @@ func newJenkinsMultiJob(conf ConfigFile, job configJob, setup string, stage conf
 		SubJobs: subJobsTemplates,
 	}
 
+	if hasEmail {
+		jenkinsMultiJob.OwnerEmails = ownerEmails.(string)
+	}
+
 	if gitBranchPresent {
 		jenkinsMultiJob.BranchSpecifier = gitBranch.(string)
 	} else {
@@ -375,6 +383,7 @@ func newJenkinsMultiJob(conf ConfigFile, job configJob, setup string, stage conf
 func newJenkinsJob(conf ConfigFile, job configJob, setup string, stage configStage, nextJobsTemplates string, nextManualJobsTemplate string, stageJobCnt int, jobCnt int, notify bool) jenkinsSingleJob {
 	projectNameTempl := createProjectNameTempl(jobCnt, stage.Name, job)
 
+	ownerEmails, hasEmail := conf.Settings["owner-emails"]
 	gitBranch, gitBranchPresent := conf.Settings["git-branch"]
 	gitURL, _ := conf.Settings["git-url"]
 
@@ -390,9 +399,10 @@ func newJenkinsJob(conf ConfigFile, job configJob, setup string, stage configSta
 			NextManualJobs:   nextManualJobsTemplate,
 		},
 
-		AndroidLint: job.AndroidLint,
-		Findbugs:    job.Findbugs,
-		Pmd:         job.Pmd,
+		AndroidLint:   job.AndroidLint,
+		Findbugs:      job.Findbugs,
+		Pmd:           job.Pmd,
+		TaskPublisher: job.TaskPublisher,
 
 		Notify:      notify,
 		Artifact:    strings.Join(job.Artifacts, ","),
@@ -401,6 +411,10 @@ func newJenkinsJob(conf ConfigFile, job configJob, setup string, stage configSta
 		TestReports: job.TestReports,
 
 		UpstreamJobs: strings.Join(job.UpstreamJobs, ","),
+	}
+
+	if hasEmail {
+		jenkinsJob.OwnerEmails = ownerEmails.(string)
 	}
 
 	if slaveLabel, slaveLabelPresent := conf.Settings["slave-label"]; slaveLabelPresent {

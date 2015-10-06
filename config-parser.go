@@ -50,9 +50,10 @@ type configStage struct {
 }
 
 type configJob struct {
-	AndroidLint AndroidLint
-	Findbugs    Findbugs
-	Pmd         Pmd
+	AndroidLint   AndroidLint
+	Findbugs      Findbugs
+	Pmd           Pmd
+	TaskPublisher TaskPublisher
 
 	Artifacts         []string
 	Cmd               string
@@ -160,6 +161,8 @@ func (cj *configJob) UnmarshalJSON(jsonString []byte) error {
 							cj.Findbugs.parseJSON(jvalue.(map[string]interface{}))
 						case "pmd":
 							cj.Pmd.parseJSON(jvalue.(map[string]interface{}))
+						case "taskPublisher":
+							cj.TaskPublisher.parseJSON(jvalue.(map[string]interface{}))
 						default:
 							return fmt.Errorf("Plugin not supported, got %#v for key %s", jvalueType, jkey)
 						}
