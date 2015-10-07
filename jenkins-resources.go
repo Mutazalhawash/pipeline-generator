@@ -368,7 +368,6 @@ func newJenkinsMultiJob(conf ConfigFile, job configJob, setup string, stage conf
 		GitURL:  gitURL.(string),
 		SubJobs: subJobsTemplates,
 	}
-	fmt.Println("Is multi job initial: ", jenkinsMultiJob.IsInitialJob)
 
 	if hasGithubUrl {
 		jenkinsMultiJob.GithubUrl = githubUrl.(string)
@@ -420,8 +419,6 @@ func newJenkinsJob(conf ConfigFile, job configJob, setup string, stage configSta
 
 		UpstreamJobs: strings.Join(job.UpstreamJobs, ","),
 	}
-	fmt.Println("Is single job initial: ", jenkinsJob.IsInitialJob)
-	fmt.Println("Is single job first: ", jobCnt)
 
 	if hasGithubUrl {
 		jenkinsJob.GithubUrl = githubUrl.(string)

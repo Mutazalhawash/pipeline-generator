@@ -294,7 +294,7 @@ git reset --hard ${GIT_SHA}{{ end }}
       <excludePattern>{{ .TaskPublisher.ExcludePattern }}</excludePattern>
     </hudson.plugins.tasks.TasksPublisher>
     {{ end }}
-    {{ if .Violations }}
+    {{ if .Violations.Checkstyle.Pattern }}
     <hudson.plugins.violations.ViolationsPublisher plugin="violations@0.7.11">
       <config>
         <suppressions class="sorted-set"/>
