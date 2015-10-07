@@ -54,6 +54,7 @@ type configJob struct {
 	Findbugs      Findbugs
 	Pmd           Pmd
 	TaskPublisher TaskPublisher
+	Violations    Violations
 
 	Artifacts         []string
 	Cmd               string
@@ -163,6 +164,8 @@ func (cj *configJob) UnmarshalJSON(jsonString []byte) error {
 							cj.Pmd.parseJSON(jvalue.(map[string]interface{}))
 						case "taskPublisher":
 							cj.TaskPublisher.parseJSON(jvalue.(map[string]interface{}))
+						case "violations":
+							cj.Violations.parseJSON(jvalue.(map[string]interface{}))
 						default:
 							return fmt.Errorf("Plugin not supported, got %#v for key %s", jvalueType, jkey)
 						}

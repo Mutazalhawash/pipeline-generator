@@ -81,3 +81,24 @@ func (taskPublisher *TaskPublisher) parseJSON(jsonString map[string]interface{})
 
 	return nil
 }
+
+type Violations struct {
+	Checkstyle Checkstyle
+}
+
+type Checkstyle struct {
+	Pattern string
+}
+
+func (violations *Violations) parseJSON(jsonString map[string]interface{}) error {
+	for key, value := range jsonString {
+		switch key {
+		case "checkstyle":
+			violations.Checkstyle.Pattern = (value.(map[string]interface{}))["pattern"].(string)
+		default:
+			return fmt.Errorf("Unknown key for TaskPublisher plugin: got %#v for key %s", value, key)
+		}
+	}
+
+	return nil
+}

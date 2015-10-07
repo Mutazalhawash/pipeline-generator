@@ -47,6 +47,7 @@ type jenkinsJob struct {
 	NextManualJobs    string
 	NextJobs          string
 	OwnerEmails       string
+	GithubUrl         string
 }
 
 type jenkinsSingleJob struct {
@@ -55,6 +56,7 @@ type jenkinsSingleJob struct {
 	Findbugs      Findbugs
 	Pmd           Pmd
 	TaskPublisher TaskPublisher
+	Violations    Violations
 
 	Artifact        string
 	ArtifactDep     []artifactDep
@@ -341,13 +343,13 @@ func newJenkinsMultiJob(conf ConfigFile, job configJob, setup string, stage conf
 	var subJobs []jenkinsSingleJob
 	var subJobsTemplates []string
 
+	githubUrl, hasGithubUrl := conf.Settings["github-url"]
 	ownerEmails, hasEmail := conf.Settings["owner-emails"]
 	gitBranch, gitBranchPresent := conf.Settings["git-branch"]
 	gitURL, _ := conf.Settings["git-url"]
 
-	for _, subJob := range job.SubJobs {
-		jobCnt++
-		jenkinsJob := newJenkinsJob(conf, subJob, setup, stage, "", "", stageJobCnt, jobCnt, notify)
+	for i, subJob := range job.SubJobs {
+		jenkinsJob := newJenkinsJob(conf, subJob, setup, stage, "", "", stageJobCnt, (jobCnt + i + 1), notify)
 		jenkinsJob.IsSubJob = true
 		jenkinsJob.TaskName = "---- " + jenkinsJob.TaskName // indent sub jobs
 		subJobs = append(subJobs, jenkinsJob)
@@ -366,6 +368,11 @@ func newJenkinsMultiJob(conf ConfigFile, job configJob, setup string, stage conf
 		GitURL:  gitURL.(string),
 		SubJobs: subJobsTemplates,
 	}
+	fmt.Println("Is multi job initial: ", jenkinsMultiJob.IsInitialJob)
+
+	if hasGithubUrl {
+		jenkinsMultiJob.GithubUrl = githubUrl.(string)
+	}
 
 	if hasEmail {
 		jenkinsMultiJob.OwnerEmails = ownerEmails.(string)
@@ -383,6 +390,7 @@ func newJenkinsMultiJob(conf ConfigFile, job configJob, setup string, stage conf
 func newJenkinsJob(conf ConfigFile, job configJob, setup string, stage configStage, nextJobsTemplates string, nextManualJobsTemplate string, stageJobCnt int, jobCnt int, notify bool) jenkinsSingleJob {
 	projectNameTempl := createProjectNameTempl(jobCnt, stage.Name, job)
 
+	githubUrl, hasGithubUrl := conf.Settings["github-url"]
 	ownerEmails, hasEmail := conf.Settings["owner-emails"]
 	gitBranch, gitBranchPresent := conf.Settings["git-branch"]
 	gitURL, _ := conf.Settings["git-url"]
@@ -398,11 +406,11 @@ func newJenkinsJob(conf ConfigFile, job configJob, setup string, stage configSta
 			CleanWorkspace:   !job.NoClean,
 			NextManualJobs:   nextManualJobsTemplate,
 		},
-
 		AndroidLint:   job.AndroidLint,
 		Findbugs:      job.Findbugs,
 		Pmd:           job.Pmd,
 		TaskPublisher: job.TaskPublisher,
+		Violations:    job.Violations,
 
 		Notify:      notify,
 		Artifact:    strings.Join(job.Artifacts, ","),
@@ -411,6 +419,12 @@ func newJenkinsJob(conf ConfigFile, job configJob, setup string, stage configSta
 		TestReports: job.TestReports,
 
 		UpstreamJobs: strings.Join(job.UpstreamJobs, ","),
+	}
+	fmt.Println("Is single job initial: ", jenkinsJob.IsInitialJob)
+	fmt.Println("Is single job first: ", jobCnt)
+
+	if hasGithubUrl {
+		jenkinsJob.GithubUrl = githubUrl.(string)
 	}
 
 	if hasEmail {

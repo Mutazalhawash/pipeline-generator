@@ -8,6 +8,9 @@
       <taskName>parallel execution</taskName>
       <stageName>{{ .StageName }}</stageName>
     </se.diabol.jenkins.pipeline.PipelineProperty>
+    <com.coravy.hudson.plugins.github.GithubProjectProperty plugin="github@1.12.0">
+      <projectUrl>{{ .GithubUrl }}</projectUrl>
+    </com.coravy.hudson.plugins.github.GithubProjectProperty>
   </properties>
   <scm class="hudson.plugins.git.GitSCM" plugin="git@2.4.0">
 		<configVersion>2</configVersion>
@@ -110,5 +113,16 @@
     </hudson.plugins.parameterizedtrigger.BuildTrigger>
     {{ end }}
   </publishers>
-  <buildWrappers/>
+  <buildWrappers>
+    <hudson.plugins.ansicolor.AnsiColorBuildWrapper plugin="ansicolor@0.4.0">
+      <colorMapName>xterm</colorMapName>
+    </hudson.plugins.ansicolor.AnsiColorBuildWrapper>
+    {{ if .IsInitialJob }}
+    <se.diabol.jenkins.pipeline.PipelineVersionContributor plugin="delivery-pipeline-plugin@0.8.7">
+      <versionTemplate>${BUILD_NUMBER}-${GIT_REVISION,length=7}</versionTemplate>
+      <updateDisplayName>true</updateDisplayName>
+    </se.diabol.jenkins.pipeline.PipelineVersionContributor>
+    {{ end }}
+    <hudson.plugins.timestamper.TimestamperBuildWrapper plugin="timestamper@1.6.2"/>
+  </buildWrappers>
 </com.tikal.jenkins.plugins.multijob.MultiJobProject>

@@ -14,6 +14,9 @@
       <taskName>{{ .TaskName }}</taskName>
       <stageName>{{ .StageName }}</stageName>
     </se.diabol.jenkins.pipeline.PipelineProperty>
+    <com.coravy.hudson.plugins.github.GithubProjectProperty plugin="github@1.12.0">
+      <projectUrl>{{ .GithubUrl }}</projectUrl>
+    </com.coravy.hudson.plugins.github.GithubProjectProperty>
   </properties>
   {{ if .IsInitialJob }}
   <scm class="hudson.plugins.git.GitSCM" plugin="git@2.2.9">
@@ -290,6 +293,30 @@ git reset --hard ${GIT_SHA}{{ end }}
       <pattern>{{ .TaskPublisher.Pattern }}</pattern>
       <excludePattern>{{ .TaskPublisher.ExcludePattern }}</excludePattern>
     </hudson.plugins.tasks.TasksPublisher>
+    {{ end }}
+    {{ if .Violations }}
+    <hudson.plugins.violations.ViolationsPublisher plugin="violations@0.7.11">
+      <config>
+        <suppressions class="sorted-set"/>
+        <typeConfigs>
+          <entry>
+            <string>checkstyle</string>
+            <hudson.plugins.violations.TypeConfig>
+              <type>checkstyle</type>
+              <min>100000</min>
+              <max>100001</max>
+              <unstable>100000</unstable>
+              <usePattern>false</usePattern>
+              <pattern>{{ .Violations.Checkstyle.Pattern }}</pattern>
+            </hudson.plugins.violations.TypeConfig>
+          </entry>
+        </typeConfigs>
+        <limit>100</limit>
+        <sourcePathPattern/>
+        <fauxProjectPath/>
+        <encoding>default</encoding>
+      </config>
+    </hudson.plugins.violations.ViolationsPublisher>
     {{ end }}
     {{ if .TestReports }}
     <hudson.tasks.junit.JUnitResultArchiver plugin="junit@1.0">
