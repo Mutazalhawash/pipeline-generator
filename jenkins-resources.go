@@ -57,6 +57,7 @@ type jenkinsSingleJob struct {
 	Pmd           Pmd
 	TaskPublisher TaskPublisher
 	Violations    Violations
+	HtmlReports   HtmlReports
 
 	Artifact        string
 	ArtifactDep     []artifactDep
@@ -81,6 +82,8 @@ type jenkinsMultiJob struct {
 type jenkinsPipelineView struct {
 	Name          string
 	jenkinsServer JenkinsServer
+	FirstJob      string
+	LastJob       string
 }
 
 // DefaultName returns a default name which can be set in the configuration file
@@ -410,6 +413,7 @@ func newJenkinsJob(conf ConfigFile, job configJob, setup string, stage configSta
 		Pmd:           job.Pmd,
 		TaskPublisher: job.TaskPublisher,
 		Violations:    job.Violations,
+		HtmlReports:   job.HtmlReports,
 
 		Notify:      notify,
 		Artifact:    strings.Join(job.Artifacts, ","),
@@ -459,6 +463,7 @@ func (jp *JenkinsPipeline) UnmarshalJSON(jsonString []byte) error {
 		return err
 	}
 
+	pipelineName, _ := conf.Settings["default-name"]
 	_js, jenkinsServerPresent := conf.Settings["jenkins-server"]
 	_gitURL, gitURLPresent := conf.Settings["git-url"]
 	switch {
@@ -494,8 +499,10 @@ func (jp *JenkinsPipeline) UnmarshalJSON(jsonString []byte) error {
 	}
 
 	jobCnt := 0
+
 	for _, stage := range conf.Stages {
 		for stageJobCnt, job := range stage.Jobs {
+
 			var nextJobsTemplates string
 			var nextManualJobsTemplate string
 			if stageJobCnt == len(stage.Jobs)-1 { // last job in stage uses explict next-jobs
@@ -512,9 +519,11 @@ func (jp *JenkinsPipeline) UnmarshalJSON(jsonString []byte) error {
 			}
 
 			if job.isMultiJob() == true {
+
 				multijob, subJobs := newJenkinsMultiJob(conf, job, setup, stage, nextJobsTemplates, nextManualJobsTemplate, stageJobCnt, jobCnt, notify)
 
 				pipeline.resources = append(pipeline.resources, multijob)
+
 				for _, subJob := range subJobs {
 					pipeline.resources = append(pipeline.resources, subJob)
 				}
@@ -529,8 +538,28 @@ func (jp *JenkinsPipeline) UnmarshalJSON(jsonString []byte) error {
 				}
 
 				pipeline.resources = append(pipeline.resources, jenkinsJob)
+
 				jobCnt++
 			}
+		}
+	}
+
+	var jobs []string
+	for _, res := range pipeline.resources {
+		switch res.(type) {
+		case jenkinsMultiJob:
+			if pipelineNameNew, ok := pipelineName.(string); ok {
+				current := res.(jenkinsMultiJob)
+				name := strings.Replace(current.ProjectNameTempl, "{{ .PipelineName }}", pipelineNameNew, -1)
+				jobs = append(jobs, name)
+			}
+		case jenkinsSingleJob:
+			current := res.(jenkinsSingleJob)
+			if pipelineNameNew, ok := pipelineName.(string); ok {
+				name := strings.Replace(current.ProjectNameTempl, "{{ .PipelineName }}", pipelineNameNew, -1)
+				jobs = append(jobs, name)
+			}
+
 		}
 	}
 
@@ -549,7 +578,7 @@ func (jp *JenkinsPipeline) UnmarshalJSON(jsonString []byte) error {
 
 	// only create pipeline view if there are more than one job
 	if len(pipeline.resources) > 1 {
-		pipeline.resources = append(pipeline.resources, jenkinsPipelineView{"{{ .PipelineName }}", pipeline.JenkinsServer})
+		pipeline.resources = append(pipeline.resources, jenkinsPipelineView{"{{ .PipelineName }}", pipeline.JenkinsServer, jobs[0], jobs[len(jobs)-1]})
 	}
 
 	*jp = pipeline

@@ -96,9 +96,32 @@ func (violations *Violations) parseJSON(jsonString map[string]interface{}) error
 		case "checkstyle":
 			violations.Checkstyle.Pattern = (value.(map[string]interface{}))["pattern"].(string)
 		default:
-			return fmt.Errorf("Unknown key for TaskPublisher plugin: got %#v for key %s", value, key)
+			return fmt.Errorf("Unknown key for Violations plugin: got %#v for key %s", value, key)
 		}
 	}
 
+	return nil
+}
+
+type HtmlReports struct {
+	Reports []Report
+}
+
+type Report struct {
+	ReportName  string
+	ReportDir   string
+	ReportFiles string
+}
+
+func (htmlReports *HtmlReports) parseJSON(jsonString []interface{}) error {
+	var reports []Report
+	for _, report := range jsonString {
+		reports = append(reports, Report{
+			ReportName:  ((report.(map[string]interface{}))["reportName"]).(string),
+			ReportDir:   ((report.(map[string]interface{}))["reportDir"]).(string),
+			ReportFiles: ((report.(map[string]interface{}))["reportFiles"]).(string),
+		})
+	}
+	htmlReports.Reports = reports
 	return nil
 }

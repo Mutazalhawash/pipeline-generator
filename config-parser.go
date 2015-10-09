@@ -55,6 +55,7 @@ type configJob struct {
 	Pmd           Pmd
 	TaskPublisher TaskPublisher
 	Violations    Violations
+	HtmlReports   HtmlReports
 
 	Artifacts         []string
 	Cmd               string
@@ -151,10 +152,12 @@ func (cj *configJob) UnmarshalJSON(jsonString []byte) error {
 							for _, upstreamJob := range jvalue.([]interface{}) {
 								cj.UpstreamJobs = append(cj.UpstreamJobs, upstreamJob.(string))
 							}
+						case "html-reports":
+							cj.HtmlReports.parseJSON(jvalue.([]interface{}))
 						default:
 							return fmt.Errorf("unknown array option passed in: %s", jkey)
 						}
-					case map[string]interface{}:
+					case map[string]interface{}: //plugins
 						switch jkey {
 						case "android-lint":
 							cj.AndroidLint.parseJSON(jvalue.(map[string]interface{}))
