@@ -48,6 +48,7 @@ type jenkinsJob struct {
 	NextJobs          string
 	OwnerEmails       string
 	GithubUrl         string
+	Schedule          string
 }
 
 type jenkinsSingleJob struct {
@@ -407,6 +408,7 @@ func newJenkinsJob(conf ConfigFile, job configJob, setup string, stage configSta
 			NextJobs:         nextJobsTemplates,
 			CleanWorkspace:   !job.NoClean,
 			NextManualJobs:   nextManualJobsTemplate,
+			Schedule:         job.Schedule,
 		},
 		AndroidLint:   job.AndroidLint,
 		Findbugs:      job.Findbugs,

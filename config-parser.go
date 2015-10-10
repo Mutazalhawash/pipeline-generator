@@ -66,6 +66,7 @@ type configJob struct {
 	TestReports       string
 	TriggeredManually bool
 	UpstreamJobs      []string
+	Schedule          string
 }
 
 func (cj configJob) taskName() string {
@@ -123,6 +124,8 @@ func (cj *configJob) UnmarshalJSON(jsonString []byte) error {
 							cj.Cmd = escape(jvalue.(string))
 						case "test-reports":
 							cj.TestReports = jvalue.(string)
+						case "schedule":
+							cj.Schedule = jvalue.(string)
 						case "artifact":
 							artifacts := strings.Split(jvalue.(string), ",")
 							return fmt.Errorf("\ndeprecated attribute syntax:\n\n\"artifact\": \"%s\"\n\nuse\n\n\"artifacts\": [\"%s\"]\n\ninstead\n", strings.Join(artifacts, ","), strings.Join(artifacts, `","`))

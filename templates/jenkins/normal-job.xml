@@ -131,7 +131,13 @@
     </hudson.plugins.ansicolor.AnsiColorBuildWrapper>
   </buildWrappers>
   {{ end }}
-
+  {{ if .Schedule }}
+  <triggers>
+    <hudson.triggers.TimerTrigger>
+      <spec>{{ .Schedule }}</spec>
+    </hudson.triggers.TimerTrigger>
+  </triggers>
+  {{ end }}
   {{ if .SlaveLabel }}
   <assignedNode>{{ .SlaveLabel }}</assignedNode>
   {{ end }}
