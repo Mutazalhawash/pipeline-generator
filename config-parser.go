@@ -50,12 +50,7 @@ type configStage struct {
 }
 
 type configJob struct {
-	AndroidLint   AndroidLint
-	Findbugs      Findbugs
-	Pmd           Pmd
-	TaskPublisher TaskPublisher
-	Violations    Violations
-	HtmlReports   HtmlReports
+	Plugins Plugins
 
 	Artifacts         []string
 	Cmd               string
@@ -155,26 +150,13 @@ func (cj *configJob) UnmarshalJSON(jsonString []byte) error {
 							for _, upstreamJob := range jvalue.([]interface{}) {
 								cj.UpstreamJobs = append(cj.UpstreamJobs, upstreamJob.(string))
 							}
-						case "html-reports":
-							cj.HtmlReports.parseJSON(jvalue.([]interface{}))
 						default:
 							return fmt.Errorf("unknown array option passed in: %s", jkey)
 						}
 					case map[string]interface{}: //plugins
-						switch jkey {
-						case "android-lint":
-							cj.AndroidLint.parseJSON(jvalue.(map[string]interface{}))
-						case "findbugs":
-							cj.Findbugs.parseJSON(jvalue.(map[string]interface{}))
-						case "pmd":
-							cj.Pmd.parseJSON(jvalue.(map[string]interface{}))
-						case "taskPublisher":
-							cj.TaskPublisher.parseJSON(jvalue.(map[string]interface{}))
-						case "violations":
-							cj.Violations.parseJSON(jvalue.(map[string]interface{}))
-						default:
-							return fmt.Errorf("Plugin not supported, got %#v for key %s", jvalueType, jkey)
-						}
+						valueData, _ := json.Marshal(jvalue)
+						json.Unmarshal(valueData, &cj.Plugins)
+
 					default:
 						return fmt.Errorf("job hash must only contain string or bool values, got %#v for key %s", jvalueType, jkey)
 					}

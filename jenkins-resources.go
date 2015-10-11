@@ -58,7 +58,7 @@ type jenkinsSingleJob struct {
 	Pmd           Pmd
 	TaskPublisher TaskPublisher
 	Violations    Violations
-	HtmlReports   HtmlReports
+	HtmlReports   []Report
 
 	Artifact        string
 	ArtifactDep     []artifactDep
@@ -410,12 +410,12 @@ func newJenkinsJob(conf ConfigFile, job configJob, setup string, stage configSta
 			NextManualJobs:   nextManualJobsTemplate,
 			Schedule:         job.Schedule,
 		},
-		AndroidLint:   job.AndroidLint,
-		Findbugs:      job.Findbugs,
-		Pmd:           job.Pmd,
-		TaskPublisher: job.TaskPublisher,
-		Violations:    job.Violations,
-		HtmlReports:   job.HtmlReports,
+		AndroidLint:   job.Plugins.AndroidLint,
+		Findbugs:      job.Plugins.Findbugs,
+		Pmd:           job.Plugins.Pmd,
+		TaskPublisher: job.Plugins.TaskPublisher,
+		Violations:    job.Plugins.Violations,
+		HtmlReports:   job.Plugins.HtmlReports,
 
 		Notify:      notify,
 		Artifact:    strings.Join(job.Artifacts, ","),
@@ -460,7 +460,6 @@ func (jp *JenkinsPipeline) UnmarshalJSON(jsonString []byte) error {
 	var conf ConfigFile
 	var pipeline JenkinsPipeline
 	err := json.NewDecoder(bytes.NewReader(jsonString)).Decode(&conf)
-
 	if err != nil {
 		return err
 	}

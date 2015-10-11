@@ -201,7 +201,6 @@ func TestPipelineCreation(t *testing.T) {
 
 		{"job14 escapes ampersands in cmd field correctly", "\n# change to working dir:\ncd subdir\n\n\n# job setup\nexport VAR=foobar\n\n# job\necho 'job14' &amp;&amp; ls", jp.resources[14].(jenkinsSingleJob).Command},
 		{"job16 has AndroidLint plugin pattern set", "pattern", jp.resources[16].(jenkinsSingleJob).AndroidLint.Pattern},
-		{"job16 has AndroidLint plugin HasAdvancedSettings set", true, jp.resources[16].(jenkinsSingleJob).AndroidLint.HasAdvancedSettings},
 		{"job16 has AndroidLint plugin FailedTotalHigh set", 110, int(jp.resources[16].(jenkinsSingleJob).AndroidLint.FailedTotalNormal)},
 		{"job16 has AndroidLint plugin FailedTotalNormal set", 110, int(jp.resources[16].(jenkinsSingleJob).AndroidLint.FailedTotalNormal)},
 		{"job16 has FindBugs plugin pattern set", "pattern", jp.resources[16].(jenkinsSingleJob).Findbugs.Pattern},
