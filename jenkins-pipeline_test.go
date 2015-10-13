@@ -197,13 +197,16 @@ func TestPipelineCreation(t *testing.T) {
 
 		{"job12 stage name", "stage4", jp.resources[13].(jenkinsSingleJob).StageName},
 		{"job12 does not have next job as it is in manual stage", "", jp.resources[13].(jenkinsSingleJob).NextJobs},
-		{"job12 does not have AndroidLint", "", jp.resources[13].(jenkinsSingleJob).AndroidLint.LintFile},
+		{"job12 does not have AndroidLint", "", jp.resources[13].(jenkinsSingleJob).AndroidLint.Pattern},
 
 		{"job14 escapes ampersands in cmd field correctly", "\n# change to working dir:\ncd subdir\n\n\n# job setup\nexport VAR=foobar\n\n# job\necho 'job14' &amp;&amp; ls", jp.resources[14].(jenkinsSingleJob).Command},
-		{"job16 has AndroidLint plugin path set", "path", jp.resources[16].(jenkinsSingleJob).AndroidLint.LintFile},
-		{"job16 has AndroidLint plugin HasAdvancedSettings set", true, jp.resources[16].(jenkinsSingleJob).AndroidLint.HasAdvancedSettings},
+		{"job16 has AndroidLint plugin pattern set", "pattern", jp.resources[16].(jenkinsSingleJob).AndroidLint.Pattern},
 		{"job16 has AndroidLint plugin FailedTotalHigh set", 110, int(jp.resources[16].(jenkinsSingleJob).AndroidLint.FailedTotalNormal)},
 		{"job16 has AndroidLint plugin FailedTotalNormal set", 110, int(jp.resources[16].(jenkinsSingleJob).AndroidLint.FailedTotalNormal)},
+		{"job16 has FindBugs plugin pattern set", "pattern", jp.resources[16].(jenkinsSingleJob).Findbugs.Pattern},
+		{"job16 has Pmd plugin pattern set", "pattern", jp.resources[16].(jenkinsSingleJob).Pmd.Pattern},
+		{"job16 has TaskPublisher plugin pattern set", "pattern", jp.resources[16].(jenkinsSingleJob).TaskPublisher.Pattern},
+		{"job16 has TaskPublisher plugin excludePattern set", "excludePattern", jp.resources[16].(jenkinsSingleJob).TaskPublisher.ExcludePattern},
 		{"pipeline projectName", "test-project", pipelineViewEndPoint},
 	}.Run(t)
 }

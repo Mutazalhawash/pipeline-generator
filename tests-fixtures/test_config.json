@@ -57,7 +57,17 @@
         {
             "name": "stage6",
             "jobs": [
-                { "job16": {"cmd": "echo 'job14' && ls", "android-lint": { "lintFile": "path", "failedTotalHigh": 10, "failedTotalNormal": 110 }} }
+                { 
+                    "job16": {
+                        "cmd": "echo 'job14' && ls", 
+                        "plugins": {
+                            "androidLint": { "pattern": "pattern", "failedTotalHigh": 10, "failedTotalNormal": 110 },
+                            "findbugs": { "pattern" : "pattern" },
+                            "pmd": { "pattern": "pattern" },
+                            "taskPublisher": { "pattern": "pattern", "excludePattern": "excludePattern" }
+                        }
+                    }
+                }
             ]
         }
     ],

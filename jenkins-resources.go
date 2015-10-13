@@ -46,11 +46,20 @@ type jenkinsJob struct {
 	StageName         string
 	NextManualJobs    string
 	NextJobs          string
+	OwnerEmails       string
+	GithubUrl         string
+	Schedule          string
 }
 
 type jenkinsSingleJob struct {
 	jenkinsJob
-	AndroidLint AndroidLint
+	AndroidLint   AndroidLint
+	Findbugs      Findbugs
+	Pmd           Pmd
+	TaskPublisher TaskPublisher
+	Violations    Violations
+	HtmlReports   []Report
+	ExtEmail      ExtEmail
 
 	Artifact        string
 	ArtifactDep     []artifactDep
@@ -75,6 +84,8 @@ type jenkinsMultiJob struct {
 type jenkinsPipelineView struct {
 	Name          string
 	jenkinsServer JenkinsServer
+	FirstJob      string
+	LastJob       string
 }
 
 // DefaultName returns a default name which can be set in the configuration file
@@ -336,12 +347,14 @@ func newJenkinsMultiJob(conf ConfigFile, job configJob, setup string, stage conf
 	projectNameTempl := []string{createProjectNameTempl(jobCnt, stage.Name, job)}
 	var subJobs []jenkinsSingleJob
 	var subJobsTemplates []string
+
+	githubUrl, hasGithubUrl := conf.Settings["github-url"]
+	ownerEmails, hasEmail := conf.Settings["owner-emails"]
 	gitBranch, gitBranchPresent := conf.Settings["git-branch"]
 	gitURL, _ := conf.Settings["git-url"]
 
-	for _, subJob := range job.SubJobs {
-		jobCnt++
-		jenkinsJob := newJenkinsJob(conf, subJob, setup, stage, "", "", stageJobCnt, jobCnt, notify)
+	for i, subJob := range job.SubJobs {
+		jenkinsJob := newJenkinsJob(conf, subJob, setup, stage, "", "", stageJobCnt, (jobCnt + i + 1), notify)
 		jenkinsJob.IsSubJob = true
 		jenkinsJob.TaskName = "---- " + jenkinsJob.TaskName // indent sub jobs
 		subJobs = append(subJobs, jenkinsJob)
@@ -361,6 +374,14 @@ func newJenkinsMultiJob(conf ConfigFile, job configJob, setup string, stage conf
 		SubJobs: subJobsTemplates,
 	}
 
+	if hasGithubUrl {
+		jenkinsMultiJob.GithubUrl = githubUrl.(string)
+	}
+
+	if hasEmail {
+		jenkinsMultiJob.OwnerEmails = ownerEmails.(string)
+	}
+
 	if gitBranchPresent {
 		jenkinsMultiJob.BranchSpecifier = gitBranch.(string)
 	} else {
@@ -373,6 +394,8 @@ func newJenkinsMultiJob(conf ConfigFile, job configJob, setup string, stage conf
 func newJenkinsJob(conf ConfigFile, job configJob, setup string, stage configStage, nextJobsTemplates string, nextManualJobsTemplate string, stageJobCnt int, jobCnt int, notify bool) jenkinsSingleJob {
 	projectNameTempl := createProjectNameTempl(jobCnt, stage.Name, job)
 
+	githubUrl, hasGithubUrl := conf.Settings["github-url"]
+	ownerEmails, hasEmail := conf.Settings["owner-emails"]
 	gitBranch, gitBranchPresent := conf.Settings["git-branch"]
 	gitURL, _ := conf.Settings["git-url"]
 
@@ -386,9 +409,15 @@ func newJenkinsJob(conf ConfigFile, job configJob, setup string, stage configSta
 			NextJobs:         nextJobsTemplates,
 			CleanWorkspace:   !job.NoClean,
 			NextManualJobs:   nextManualJobsTemplate,
+			Schedule:         job.Schedule,
 		},
-
-		AndroidLint: job.AndroidLint,
+		AndroidLint:   job.Plugins.AndroidLint,
+		Findbugs:      job.Plugins.Findbugs,
+		Pmd:           job.Plugins.Pmd,
+		TaskPublisher: job.Plugins.TaskPublisher,
+		Violations:    job.Plugins.Violations,
+		HtmlReports:   job.Plugins.HtmlReports,
+		ExtEmail:      job.Plugins.ExtEmail,
 
 		Notify:      notify,
 		Artifact:    strings.Join(job.Artifacts, ","),
@@ -397,6 +426,14 @@ func newJenkinsJob(conf ConfigFile, job configJob, setup string, stage configSta
 		TestReports: job.TestReports,
 
 		UpstreamJobs: strings.Join(job.UpstreamJobs, ","),
+	}
+
+	if hasGithubUrl {
+		jenkinsJob.GithubUrl = githubUrl.(string)
+	}
+
+	if hasEmail {
+		jenkinsJob.OwnerEmails = ownerEmails.(string)
 	}
 
 	if slaveLabel, slaveLabelPresent := conf.Settings["slave-label"]; slaveLabelPresent {
@@ -425,11 +462,11 @@ func (jp *JenkinsPipeline) UnmarshalJSON(jsonString []byte) error {
 	var conf ConfigFile
 	var pipeline JenkinsPipeline
 	err := json.NewDecoder(bytes.NewReader(jsonString)).Decode(&conf)
-
 	if err != nil {
 		return err
 	}
 
+	pipelineName, _ := conf.Settings["default-name"]
 	_js, jenkinsServerPresent := conf.Settings["jenkins-server"]
 	_gitURL, gitURLPresent := conf.Settings["git-url"]
 	switch {
@@ -465,8 +502,10 @@ func (jp *JenkinsPipeline) UnmarshalJSON(jsonString []byte) error {
 	}
 
 	jobCnt := 0
+
 	for _, stage := range conf.Stages {
 		for stageJobCnt, job := range stage.Jobs {
+
 			var nextJobsTemplates string
 			var nextManualJobsTemplate string
 			if stageJobCnt == len(stage.Jobs)-1 { // last job in stage uses explict next-jobs
@@ -483,9 +522,11 @@ func (jp *JenkinsPipeline) UnmarshalJSON(jsonString []byte) error {
 			}
 
 			if job.isMultiJob() == true {
+
 				multijob, subJobs := newJenkinsMultiJob(conf, job, setup, stage, nextJobsTemplates, nextManualJobsTemplate, stageJobCnt, jobCnt, notify)
 
 				pipeline.resources = append(pipeline.resources, multijob)
+
 				for _, subJob := range subJobs {
 					pipeline.resources = append(pipeline.resources, subJob)
 				}
@@ -500,8 +541,28 @@ func (jp *JenkinsPipeline) UnmarshalJSON(jsonString []byte) error {
 				}
 
 				pipeline.resources = append(pipeline.resources, jenkinsJob)
+
 				jobCnt++
 			}
+		}
+	}
+
+	var jobs []string
+	for _, res := range pipeline.resources {
+		switch res.(type) {
+		case jenkinsMultiJob:
+			if pipelineNameNew, ok := pipelineName.(string); ok {
+				current := res.(jenkinsMultiJob)
+				name := strings.Replace(current.ProjectNameTempl, "{{ .PipelineName }}", pipelineNameNew, -1)
+				jobs = append(jobs, name)
+			}
+		case jenkinsSingleJob:
+			current := res.(jenkinsSingleJob)
+			if pipelineNameNew, ok := pipelineName.(string); ok {
+				name := strings.Replace(current.ProjectNameTempl, "{{ .PipelineName }}", pipelineNameNew, -1)
+				jobs = append(jobs, name)
+			}
+
 		}
 	}
 
@@ -520,7 +581,7 @@ func (jp *JenkinsPipeline) UnmarshalJSON(jsonString []byte) error {
 
 	// only create pipeline view if there are more than one job
 	if len(pipeline.resources) > 1 {
-		pipeline.resources = append(pipeline.resources, jenkinsPipelineView{"{{ .PipelineName }}", pipeline.JenkinsServer})
+		pipeline.resources = append(pipeline.resources, jenkinsPipelineView{"{{ .PipelineName }}", pipeline.JenkinsServer, jobs[0], jobs[len(jobs)-1]})
 	}
 
 	*jp = pipeline

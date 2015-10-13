@@ -7,7 +7,8 @@
   <componentSpecs>
     <se.diabol.jenkins.pipeline.DeliveryPipelineView_-ComponentSpec>
       <name>{{ .Name }}</name>
-      <firstJob>{{ .Name }}</firstJob>
+      <firstJob>{{ .FirstJob }}</firstJob>
+      <lastJob>{{ .LastJob }}</lastJob>
     </se.diabol.jenkins.pipeline.DeliveryPipelineView_-ComponentSpec>
   </componentSpecs>
   <noOfPipelines>10</noOfPipelines>
