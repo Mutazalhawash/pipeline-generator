@@ -7,6 +7,7 @@ type Plugins struct {
 	TaskPublisher TaskPublisher
 	Violations    Violations
 	HtmlReports   []Report
+	ExtEmail      ExtEmail
 }
 
 type AndroidLint struct {
@@ -40,4 +41,8 @@ type Report struct {
 	ReportName  string
 	ReportDir   string
 	ReportFiles string
+}
+
+type ExtEmail struct {
+	Content string
 }

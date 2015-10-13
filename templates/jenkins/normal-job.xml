@@ -370,7 +370,11 @@ git reset --hard ${GIT_SHA}{{ end }}
       </configuredTriggers>
       <contentType>text/html</contentType>
       <defaultSubject>$DEFAULT_SUBJECT</defaultSubject>
+      {{  if .ExtEmail.Content }}
+      <defaultContent>{{ .ExtEmail.Content }}</defaultContent>
+      {{ else }}
       <defaultContent>${SCRIPT, template="groovy-html.template"}</defaultContent>
+      {{ end }}
       <attachmentsPattern/>
       <presendScript>$DEFAULT_PRESEND_SCRIPT</presendScript>
       <attachBuildLog>false</attachBuildLog>
