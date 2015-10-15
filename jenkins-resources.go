@@ -49,6 +49,7 @@ type jenkinsJob struct {
 	OwnerEmails       string
 	GithubUrl         string
 	Schedule          string
+	LocalBranch       bool
 }
 
 type jenkinsSingleJob struct {
@@ -369,6 +370,7 @@ func newJenkinsMultiJob(conf ConfigFile, job configJob, setup string, stage conf
 			ProjectNameTempl: strings.Join(projectNameTempl, "_"),
 			NextJobs:         nextJobsTemplates,
 			NextManualJobs:   nextManualJobsTemplate,
+			LocalBranch:      job.LocalBranch,
 		},
 		GitURL:  gitURL.(string),
 		SubJobs: subJobsTemplates,
@@ -410,6 +412,7 @@ func newJenkinsJob(conf ConfigFile, job configJob, setup string, stage configSta
 			CleanWorkspace:   !job.NoClean,
 			NextManualJobs:   nextManualJobsTemplate,
 			Schedule:         job.Schedule,
+			LocalBranch:      job.LocalBranch,
 		},
 		AndroidLint:   job.Plugins.AndroidLint,
 		Findbugs:      job.Plugins.Findbugs,

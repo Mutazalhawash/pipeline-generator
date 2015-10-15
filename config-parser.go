@@ -52,6 +52,7 @@ type configStage struct {
 type configJob struct {
 	Plugins Plugins
 
+	LocalBranch       bool
 	Artifacts         []string
 	Cmd               string
 	DownstreamJobs    []string
@@ -133,6 +134,8 @@ func (cj *configJob) UnmarshalJSON(jsonString []byte) error {
 							cj.NoClean = jvalue.(bool)
 						case "manual":
 							cj.TriggeredManually = jvalue.(bool)
+						case "localBranch":
+							cj.LocalBranch = jvalue.(bool)
 						default:
 							return fmt.Errorf("unknown bool options passed in: %s", jkey)
 						}

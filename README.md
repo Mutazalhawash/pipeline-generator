@@ -115,6 +115,8 @@ The stages section contains an array of stages declarations that contain the fol
 
       `manual` (bool): if set to true, this job needs to be triggered manually by a user using the jenkins ui -- if omitted or set to false, job gets triggered automatically by its upstream jobs
 
+      `localBranch` (bool): if set to true this job will check out to a local branch specified in settings 
+
       - multi job: an array of simple or extended job declarations (see `stage1 / job4 & job5` in example above). Those jobs will be executed in parallel:
 
             [<simple-job-decl>,<ext-job-decl>,<simple-job-decl>, ...]

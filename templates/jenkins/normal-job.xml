@@ -55,7 +55,13 @@
     <scmName/>
     <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
     <submoduleCfg class="list"/>
-    <extensions/>
+    <extensions>
+      {{ if .LocalBranch }}
+      <hudson.plugins.git.extensions.impl.LocalBranch>
+        <localBranch>{{ .BranchSpecifier }}</localBranch>
+      </hudson.plugins.git.extensions.impl.LocalBranch>
+      {{ end }}
+    </extensions>
   </scm>
   <triggers>
     {{ if .UpstreamJobs }}
@@ -124,6 +130,13 @@
     <skipTag>true</skipTag>
     <includedRegions/>
     <scmName/>
+    <extensions>
+      {{ if .LocalBranch }}
+      <hudson.plugins.git.extensions.impl.LocalBranch>
+        <localBranch>{{ .BranchSpecifier }}</localBranch>
+      </hudson.plugins.git.extensions.impl.LocalBranch>
+      {{ end }}
+    </extensions>
   </scm>
   <buildWrappers>
     <hudson.plugins.ansicolor.AnsiColorBuildWrapper plugin="ansicolor@0.4.0">
