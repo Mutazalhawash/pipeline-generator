@@ -98,8 +98,28 @@
       </phaseJobs>
       <continuationCondition>SUCCESSFUL</continuationCondition>
     </com.tikal.jenkins.plugins.multijob.MultiJobBuilder>
+    {{ range .SubJobs }}
+    <hudson.plugins.copyartifact.CopyArtifact plugin="copyartifact@1.35.2">
+      <project>{{ . }}</project>
+      <filter/>
+      <target/>
+      <excludes/>
+      <selector class="com.tikal.jenkins.plugins.multijob.MultiJobBuildSelector" plugin="jenkins-multijob-plugin@1.18"/>
+      <optional>true</optional>
+      <doNotFingerprintArtifacts>false</doNotFingerprintArtifacts>
+    </hudson.plugins.copyartifact.CopyArtifact>
+    {{ end }}
   </builders>
   <publishers>
+    {{ if .Artifacts }}
+    <hudson.tasks.ArtifactArchiver>
+      <artifacts>{{ .Artifacts }}</artifacts>
+      <allowEmptyArchive>true</allowEmptyArchive>
+      <onlyIfSuccessful>true</onlyIfSuccessful>
+      <fingerprint>true</fingerprint>
+      <defaultExcludes>true</defaultExcludes>
+    </hudson.tasks.ArtifactArchiver>
+    {{ end }}
     {{ if .NextManualJobs }}
     <au.com.centrumsystems.hudson.plugin.buildpipeline.trigger.BuildPipelineTrigger plugin="build-pipeline-plugin@1.4.3">
       <configs>

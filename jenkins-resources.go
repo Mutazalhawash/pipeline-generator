@@ -80,6 +80,7 @@ type jenkinsMultiJob struct {
 	SubJobs         []string
 	GitURL          string
 	BranchSpecifier string
+	Artifacts       string
 }
 
 type jenkinsPipelineView struct {
@@ -87,6 +88,18 @@ type jenkinsPipelineView struct {
 	jenkinsServer JenkinsServer
 	FirstJob      string
 	LastJob       string
+}
+
+func (jenkinsMultiJob *jenkinsMultiJob) setArtifactsForCollection(subJobs []configJob) {
+	for _, subJob := range subJobs {
+		if len(subJob.Artifacts) > 0 {
+			if len(jenkinsMultiJob.Artifacts) == 0 {
+				jenkinsMultiJob.Artifacts = strings.Join(subJob.Artifacts, ",")
+			} else {
+				jenkinsMultiJob.Artifacts = jenkinsMultiJob.Artifacts + "," + strings.Join(subJob.Artifacts, ",")
+			}
+		}
+	}
 }
 
 // DefaultName returns a default name which can be set in the configuration file
@@ -389,6 +402,18 @@ func newJenkinsMultiJob(conf ConfigFile, job configJob, setup string, stage conf
 	} else {
 		jenkinsMultiJob.BranchSpecifier = "master"
 	}
+
+	for _, subJob := range job.SubJobs {
+		if len(subJob.Artifacts) > 0 {
+			if len(jenkinsMultiJob.Artifacts) == 0 {
+				jenkinsMultiJob.Artifacts = strings.Join(subJob.Artifacts, ",")
+			} else {
+				jenkinsMultiJob.Artifacts = jenkinsMultiJob.Artifacts + "," + strings.Join(subJob.Artifacts, ",")
+			}
+		}
+	}
+
+	jenkinsMultiJob.setArtifactsForCollection(job.SubJobs)
 
 	return jenkinsMultiJob, subJobs
 }
