@@ -17,7 +17,7 @@
   <sorting>none</sorting>
   <showAvatars>false</showAvatars>
   <updateInterval>2</updateInterval>
-  <showChanges>false</showChanges>
+  <showChanges>true</showChanges>
   <allowManualTriggers>true</allowManualTriggers>
   <regexpFirstJobs/>
 </se.diabol.jenkins.pipeline.DeliveryPipelineView>
