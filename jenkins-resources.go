@@ -403,16 +403,6 @@ func newJenkinsMultiJob(conf ConfigFile, job configJob, setup string, stage conf
 		jenkinsMultiJob.BranchSpecifier = "master"
 	}
 
-	for _, subJob := range job.SubJobs {
-		if len(subJob.Artifacts) > 0 {
-			if len(jenkinsMultiJob.Artifacts) == 0 {
-				jenkinsMultiJob.Artifacts = strings.Join(subJob.Artifacts, ",")
-			} else {
-				jenkinsMultiJob.Artifacts = jenkinsMultiJob.Artifacts + "," + strings.Join(subJob.Artifacts, ",")
-			}
-		}
-	}
-
 	jenkinsMultiJob.setArtifactsForCollection(job.SubJobs)
 
 	return jenkinsMultiJob, subJobs
