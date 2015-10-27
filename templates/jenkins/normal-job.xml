@@ -186,7 +186,13 @@
     </hudson.plugins.copyartifact.CopyArtifact>
     {{ end }}
     <hudson.tasks.Shell>
-      <command>{{ .Command }}</command>
+      <command>
+# pipeline creator magic
+export PIPELINE_NUMBER=$(echo "${PIPELINE_VERSION}" | cut -f1 -d'-')
+export GIT_SHA=$(echo "${PIPELINE_VERSION}" | cut -f2 -d'-'){{ if .IsInitialJob }}{{ else }}
+git reset --hard ${GIT_SHA}{{ end }}
+{{ .Command }}
+      </command>
     </hudson.tasks.Shell>
   </builders>
   <publishers>
