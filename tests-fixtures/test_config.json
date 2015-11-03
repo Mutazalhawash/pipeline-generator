@@ -64,7 +64,12 @@
                             "androidLint": { "pattern": "pattern", "failedTotalHigh": 10, "failedTotalNormal": 110 },
                             "findbugs": { "pattern" : "pattern" },
                             "pmd": { "pattern": "pattern" },
-                            "taskPublisher": { "pattern": "pattern", "excludePattern": "excludePattern" }
+                            "taskPublisher": { "pattern": "pattern", "excludePattern": "excludePattern" },
+                            "testdroid": { 
+                                "appPath": "applicationPath",
+                                "deviceGroupId": "1",
+                                "projectId": "2"
+                            }
                         }
                     }
                 }

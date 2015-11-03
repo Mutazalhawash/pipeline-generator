@@ -8,6 +8,7 @@ type Plugins struct {
 	Violations    Violations
 	HtmlReports   []Report
 	ExtEmail      ExtEmail
+	Testdroid     Testdroid
 }
 
 type AndroidLint struct {
@@ -45,4 +46,10 @@ type Report struct {
 
 type ExtEmail struct {
 	Content string
+}
+
+type Testdroid struct {
+	AppPath       string
+	DeviceGroupId string
+	ProjectId     string
 }

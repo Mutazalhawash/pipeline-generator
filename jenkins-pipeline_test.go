@@ -207,6 +207,9 @@ func TestPipelineCreation(t *testing.T) {
 		{"job16 has Pmd plugin pattern set", "pattern", jp.resources[16].(jenkinsSingleJob).Pmd.Pattern},
 		{"job16 has TaskPublisher plugin pattern set", "pattern", jp.resources[16].(jenkinsSingleJob).TaskPublisher.Pattern},
 		{"job16 has TaskPublisher plugin excludePattern set", "excludePattern", jp.resources[16].(jenkinsSingleJob).TaskPublisher.ExcludePattern},
+		{"job16 has Testdroid plugin AppPath set", "applicationPath", jp.resources[16].(jenkinsSingleJob).Testdroid.AppPath},
+		{"job16 has Testdroid plugin DeviceID set", "1", jp.resources[16].(jenkinsSingleJob).Testdroid.DeviceGroupId},
+		{"job16 has Testdroid plugin ProjectId set", "2", jp.resources[16].(jenkinsSingleJob).Testdroid.ProjectId},
 		{"pipeline projectName", "test-project", pipelineViewEndPoint},
 	}.Run(t)
 }

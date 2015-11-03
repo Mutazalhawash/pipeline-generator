@@ -194,6 +194,28 @@ git reset --hard ${GIT_SHA}{{ end }}
 {{ .Command }}
       </command>
     </hudson.tasks.Shell>
+  {{ if .Testdroid.AppPath }}
+  <com.testdroid.jenkins.RunInCloudBuilder plugin="testdroid-run-in-cloud@1.0.8">
+    <appPath>{{ .Testdroid.AppPath }}</appPath>
+    <clusterId>{{ .Testdroid.DeviceGroupId }}</clusterId>
+    <dataPath/>
+    <failBuildIfThisStepFailed>false</failBuildIfThisStepFailed>
+    <language>en-US</language>
+    <notificationEmail/>
+    <notificationEmailType>ON_FAILURE</notificationEmailType>
+    <projectId>{{ .Testdroid.ProjectId }}</projectId>
+    <scheduler>PARALLEL</scheduler>
+    <screenshotsDirectory/>
+    <testCasesSelect>PACKAGE</testCasesSelect>
+    <testCasesValue/>
+    <testPath/>
+    <testRunName/>
+    <testRunner/>
+    <withAnnotation/>
+    <withoutAnnotation/>
+    <testTimeout/>
+  </com.testdroid.jenkins.RunInCloudBuilder>
+  {{ end }}
   </builders>
   <publishers>
     {{ if .HtmlReports }}
