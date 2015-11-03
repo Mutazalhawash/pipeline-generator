@@ -62,6 +62,7 @@ type jenkinsSingleJob struct {
 	HtmlReports   []Report
 	ExtEmail      ExtEmail
 	Testdroid     Testdroid
+	Plot          Plot
 
 	Artifact        string
 	ArtifactDep     []artifactDep
@@ -438,6 +439,7 @@ func newJenkinsJob(conf ConfigFile, job configJob, setup string, stage configSta
 		HtmlReports:   job.Plugins.HtmlReports,
 		ExtEmail:      job.Plugins.ExtEmail,
 		Testdroid:     job.Plugins.Testdroid,
+		Plot:          job.Plugins.Plot,
 
 		Notify:      notify,
 		Artifact:    strings.Join(job.Artifacts, ","),

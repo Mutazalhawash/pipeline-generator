@@ -218,6 +218,36 @@ git reset --hard ${GIT_SHA}{{ end }}
   {{ end }}
   </builders>
   <publishers>
+    {{ if .Plot.Title }}
+    <hudson.plugins.plot.PlotPublisher plugin="plot@1.9">
+      <plots>
+      <hudson.plugins.plot.Plot>
+      <title>{{ .Plot.Title }}</title>
+      <yaxis/>
+      <series>
+      <hudson.plugins.plot.CSVSeries>
+      <file>{{ .Plot.File }}</file>
+      <label/>
+      <fileType>csv</fileType>
+      <inclusionFlag>OFF</inclusionFlag>
+      <exclusionValues/>
+      <url/>
+      <displayTableFlag>false</displayTableFlag>
+      </hudson.plugins.plot.CSVSeries>
+      </series>
+      <group>{{ .Plot.Group }}</group>
+      <numBuilds>{{ .Plot.NumBuilds }}</numBuilds>
+      <csvFileName></csvFileName>
+      <csvLastModification>0</csvLastModification>
+      <style>line</style>
+      <useDescr>false</useDescr>
+      <keepRecords>false</keepRecords>
+      <exclZero>false</exclZero>
+      <logarithmic>false</logarithmic>
+      </hudson.plugins.plot.Plot>
+      </plots>
+    </hudson.plugins.plot.PlotPublisher>
+    {{ end }}
     {{ if .HtmlReports }}
     <htmlpublisher.HtmlPublisher plugin="htmlpublisher@1.5">
       <reportTargets>

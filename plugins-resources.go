@@ -9,6 +9,7 @@ type Plugins struct {
 	HtmlReports   []Report
 	ExtEmail      ExtEmail
 	Testdroid     Testdroid
+	Plot          Plot
 }
 
 type AndroidLint struct {
@@ -53,4 +54,11 @@ type Testdroid struct {
 	DeviceGroupId     string
 	ProjectId         string
 	NotificationEmail string
+}
+
+type Plot struct {
+	Title     string
+	File      string
+	Group     string
+	NumBuilds string
 }
