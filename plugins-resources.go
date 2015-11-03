@@ -49,7 +49,8 @@ type ExtEmail struct {
 }
 
 type Testdroid struct {
-	AppPath       string
-	DeviceGroupId string
-	ProjectId     string
+	AppPath           string
+	DeviceGroupId     string
+	ProjectId         string
+	NotificationEmail string
 }

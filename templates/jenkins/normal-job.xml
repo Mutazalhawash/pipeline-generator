@@ -201,7 +201,7 @@ git reset --hard ${GIT_SHA}{{ end }}
     <dataPath/>
     <failBuildIfThisStepFailed>false</failBuildIfThisStepFailed>
     <language>en-US</language>
-    <notificationEmail/>
+    <notificationEmail>{{ .Testdroid.NotificationEmail }}<notificationEmail/>
     <notificationEmailType>ON_FAILURE</notificationEmailType>
     <projectId>{{ .Testdroid.ProjectId }}</projectId>
     <scheduler>PARALLEL</scheduler>
