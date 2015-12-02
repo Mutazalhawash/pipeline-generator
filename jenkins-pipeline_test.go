@@ -210,6 +210,7 @@ func TestPipelineCreation(t *testing.T) {
 		{"job16 has Testdroid plugin AppPath set", "applicationPath", jp.resources[16].(jenkinsSingleJob).Testdroid.AppPath},
 		{"job16 has Testdroid plugin DeviceID set", "1", jp.resources[16].(jenkinsSingleJob).Testdroid.DeviceGroupId},
 		{"job16 has Testdroid plugin ProjectId set", "2", jp.resources[16].(jenkinsSingleJob).Testdroid.ProjectId},
+		{"job16 has Testdroid plugin NotificationEmail set", "notification@email.com", jp.resources[16].(jenkinsSingleJob).Testdroid.NotificationEmail},
 		{"pipeline projectName", "test-project", pipelineViewEndPoint},
 	}.Run(t)
 }

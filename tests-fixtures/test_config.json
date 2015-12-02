@@ -68,7 +68,8 @@
                             "testdroid": { 
                                 "appPath": "applicationPath",
                                 "deviceGroupId": "1",
-                                "projectId": "2"
+                                "projectId": "2",
+				                "notificationEmail": "notification@email.com"
                             }
                         }
                     }
